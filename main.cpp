@@ -42,7 +42,7 @@ string exec_target;
 
 void print_error() {
     assert(errno != 0);
-    cout << strerror(errno) << endl;
+    cerr << strerror(errno) << endl;
 }
 
 // returns false if reading file info failed
@@ -64,7 +64,7 @@ bool matches(linux_dirent64* entry, int dir_fd, string const& dir_path) {
 
     int fd = openat(dir_fd, entry->d_name, O_RDONLY);
     if (fd == -1) {
-        cout << "Error opening file at " << dir_path << entry->d_name << endl;
+        cerr << "Error opening file at " << dir_path << entry->d_name << endl;
         print_error();
         return false;
     }
@@ -72,7 +72,7 @@ bool matches(linux_dirent64* entry, int dir_fd, string const& dir_path) {
     struct stat stats{};
     int result = fstat(fd, &stats);
     if (result == -1) {
-        cout << "Error reading stats of file at " << dir_path << entry->d_name << endl;
+        cerr << "Error reading stats of file at " << dir_path << entry->d_name << endl;
         print_error();
         return false;
     }
@@ -108,7 +108,7 @@ void visit(int dir_fd, string const& path) {
         long read = syscall(SYS_getdents64, dir_fd, buf, BUFFER_SIZE);
 
         if (read == -1) {
-            cout << "Error reading contents of " << path << endl;
+            cerr << "Error reading contents of " << path << endl;
             print_error();
             return;
         }
@@ -130,7 +130,7 @@ void visit(int dir_fd, string const& path) {
             } else if (entry->d_type == DT_DIR) {
                 int fd = openat(dir_fd, entry->d_name, O_RDONLY | O_DIRECTORY);
                 if (fd == -1) {
-                    cout << "Error reading contents of " << path  << name << "/" << endl;
+                    cerr << "Error reading contents of " << path  << name << "/" << endl;
                     print_error();
                 } else {
                     visit(fd, path + name + "/");
@@ -236,7 +236,7 @@ int set_args(int argc, char* argv[]) {
     }
 
     if (!hasDir) {
-        cout << "Usage: os-find [OPTIONS] DIRECTORY" << endl;
+        cout << "Usage: os_find [OPTIONS] DIRECTORY" << endl;
         return -1;
     }
 
@@ -253,7 +253,7 @@ int main(int argc, char* argv[]) {
 
     int fd = open(argv[dirPosition], O_RDONLY | O_DIRECTORY);
     if (fd == -1) {
-        cout << "Error reading contents of " << path << endl;
+        cerr << "Error reading contents of " << path << endl;
         print_error();
         return 0;
     }
@@ -275,7 +275,7 @@ int main(int argc, char* argv[]) {
 
         int res = execv(c_results[0], c_results.data());
         if (res == -1) {
-            cout << "Error executing " << exec_target << endl;
+            cerr << "Error executing " << exec_target << endl;
             print_error();
             return 0;
         }
