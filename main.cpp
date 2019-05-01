@@ -148,7 +148,6 @@ void error_multiple_specified(const string &s) {
 
 int set_args(int argc, char* argv[]) {
     bool hasDir = false;
-    bool hasOptions = false;
     int dirPosition = 0;
 
     for (int i = 1; i < argc;) {
@@ -225,7 +224,6 @@ int set_args(int argc, char* argv[]) {
                 return -1;
             }
             i+= 2;
-            hasOptions = true;
         } else {
             if (hasDir) {
                 error_multiple_specified("directory");
@@ -237,7 +235,7 @@ int set_args(int argc, char* argv[]) {
         }
     }
 
-    if (!hasDir || !hasOptions) {
+    if (!hasDir) {
         cout << "Usage: os-find [OPTIONS] DIRECTORY" << endl;
         return -1;
     }
